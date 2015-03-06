@@ -54,7 +54,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
   pcl::PassThrough<PointT> pass;
   pcl::NormalEstimation<PointT, pcl::Normal> ne;
   pcl::SACSegmentationFromNormals<PointT, pcl::Normal> seg; 
- pcl::SACSegmentationFromNormals<PointT, pcl::Normal> seg1; 
+  pcl::SACSegmentationFromNormals<PointT, pcl::Normal> seg1; 
   pcl::PCDWriter writer;
   pcl::ExtractIndices<PointT> extract;
   pcl::ExtractIndices<pcl::Normal> extract_normals;
