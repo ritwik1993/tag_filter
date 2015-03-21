@@ -12,4 +12,4 @@ After getting four tags from the above mentioned link, we can use them directly 
 A demo application using an ASUS connected, can be run using:
 `roslaunch tag_filter launch_tag.launch`
 
-In case the ASUS creates problems during the launch, refer to [pcl_495](https://github.com/ritwik1993/pcl_495). This application initializes a cropbox filter nodelet, runs a node that subscribes to the cropbox filter output, while dynamically monitoring the tags to maintain the cropbox around the area of interest. 
+This application initializes a cropbox filter nodelet, runs a node that subscribes to the cropbox filter output, while dynamically monitoring the tags to maintain the cropbox around the area of interest. In case the ASUS creates problems during the launch, refer to [pcl_495](https://github.com/ritwik1993/pcl_495). 

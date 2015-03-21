@@ -4,7 +4,7 @@
 <arg name="depth_registration" value="true"/>
 </include>
 
-<node name="rviz" pkg="rviz" type="rviz" />
+<node name="rviz" pkg="rviz" type="rviz" args="-d $(find tag_filter)/rviz/tag_filter.rviz" />
 <arg name="marker_size" default="11.948" />
 <arg name="max_new_marker_error" default="0.08" />
 <arg name="max_track_error" default="0.2" />
@@ -16,24 +16,6 @@
 
 <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen"/>
 
-<!--<node pkg="nodelet" type="nodelet" name="pass_through_x" args="load pcl/PassThrough pcl_manager" output="screen">
-<remap from="~input" to="/camera/depth_registered/points"/>
-<rosparam>
-filter_field_name: x
-filter_limit_min: -0.070
-filter_limit_max: 0.2066
-</rosparam>
-</node>
-
-
-<node pkg="nodelet" type="nodelet" name="pass_through_y" args="load pcl/PassThrough pcl_manager" output="screen">
-<remap from="~input" to="/pass_through_x/output"/>
-<rosparam>
-filter_field_name: y
-filter_limit_min: -0.03
-filter_limit_max: 0.09
-</rosparam>
-</node>-->
 
 <node pkg="nodelet" type="nodelet" name="cropbox" args="load pcl/CropBox pcl_manager" output="screen">
 <remap from="~input" to="/camera/depth_registered/points"/>
@@ -46,6 +28,7 @@ filter_limit_max: 0.09
 </node>
 
 <node name="plane_extract" pkg="tag_filter" type="remove_plane" />
+<node name="dynamic_cropbox" pkg="tag_filter" type="dynamic_cropbox.py" />
 
 <node pkg="nodelet" type="nodelet" name="outlier_removal" args="load pcl/StatisticalOutlierRemoval pcl_manager" output="screen">
 <remap from="~input" to="/noplane" />
