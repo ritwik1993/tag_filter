@@ -1,15 +1,22 @@
 
 <launch>
-
 <include file="$(find openni2_launch)/launch/openni2.launch">
 <arg name="depth_registration" value="true"/>
 </include>
 
 <node name="rviz" pkg="rviz" type="rviz" />
+<arg name="marker_size" default="11.948" />
+<arg name="max_new_marker_error" default="0.08" />
+<arg name="max_track_error" default="0.2" />
+<arg name="cam_image_topic" default="/camera/depth_registered/points" />
+<arg name="cam_info_topic" default="/camera/rgb/camera_info" />		
+<arg name="output_frame" default="/camera_rgb_optical_frame" />
+
+<node name="ar_track_alvar" pkg="ar_track_alvar" type="individualMarkers" respawn="false" output="screen" args="$(arg marker_size) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame)" />
 
 <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen"/>
 
-<node pkg="nodelet" type="nodelet" name="pass_through_x" args="load pcl/PassThrough pcl_manager" output="screen">
+<!--<node pkg="nodelet" type="nodelet" name="pass_through_x" args="load pcl/PassThrough pcl_manager" output="screen">
 <remap from="~input" to="/camera/depth_registered/points"/>
 <rosparam>
 filter_field_name: x
@@ -26,7 +33,7 @@ filter_field_name: y
 filter_limit_min: -0.03
 filter_limit_max: 0.09
 </rosparam>
-</node>
+</node>-->
 
 <node pkg="nodelet" type="nodelet" name="cropbox" args="load pcl/CropBox pcl_manager" output="screen">
 <remap from="~input" to="/camera/depth_registered/points"/>
@@ -37,24 +44,15 @@ filter_limit_max: 0.09
 <rosparam>min_z: 0.0</rosparam>
 <rosparam>max_z: 6.0</rosparam>
 </node>
-	<arg name="marker_size" default="11.948" />
-	<arg name="max_new_marker_error" default="0.08" />
-	<arg name="max_track_error" default="0.2" />
-
-	<arg name="cam_image_topic" default="/camera/depth_registered/points" />
-	<arg name="cam_info_topic" default="/camera/rgb/camera_info" />		
-	<arg name="output_frame" default="/camera_rgb_optical_frame" />
-
-	<node name="ar_track_alvar" pkg="ar_track_alvar" type="individualMarkers" respawn="false" output="screen" args="$(arg marker_size) $(arg max_new_marker_error) $(arg max_track_error) $(arg cam_image_topic) $(arg cam_info_topic) $(arg output_frame)" />
 
 <node name="plane_extract" pkg="tag_filter" type="remove_plane" />
 
 <node pkg="nodelet" type="nodelet" name="outlier_removal" args="load pcl/StatisticalOutlierRemoval pcl_manager" output="screen">
 <remap from="~input" to="/noplane" />
 <rosparam>
-      mean_k: 100
+      mean_k: 1000
       stddev: 1.0
       negative: False
 </rosparam>
 </node>
-</launch>
+</launch>	

@@ -31,6 +31,7 @@
 #include <pcl/filters/project_inliers.h>
 #include <pcl/filters/statistical_outlier_removal.h>
 #include <pcl/filters/passthrough.h>
+#include <pcl/filters/radius_outlier_removal.h>
 
 #include <boost/thread/thread.hpp>
 
@@ -64,6 +65,7 @@ void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& input)
   pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
   pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
   pcl::PointCloud<PointT>::Ptr cloud_filtered2 (new pcl::PointCloud<PointT>);
+  pcl::PointCloud<PointT>::Ptr cloud_filtered3 (new pcl::PointCloud<PointT>);
   pcl::PointCloud<pcl::Normal>::Ptr cloud_normals2 (new pcl::PointCloud<pcl::Normal>);
   pcl::ModelCoefficients::Ptr coefficients_plane (new pcl::ModelCoefficients);
   pcl::PointIndices::Ptr inliers_plane (new pcl::PointIndices);
@@ -110,21 +112,26 @@ pcl::fromROSMsg(*input, *cloud);
   extract_normals.setIndices (inliers_plane);
   extract_normals.filter (*cloud_normals2);
 
+pcl::RadiusOutlierRemoval<PointT> outrem;
+    // build the filter
+    outrem.setInputCloud(cloud_filtered2);
+    outrem.setRadiusSearch(0.05);
+    outrem.setMinNeighborsInRadius (5);
+    // apply filter
+    outrem.filter (*cloud_filtered3);
 
-pub.publish(*cloud_filtered2);
-
+pub.publish(*cloud_filtered3);
 
 }
 
 int main (int argc, char** argv)
 {
   // Initialize ROS
-  ros::init (argc, argv, "find_cylinders");
+  ros::init (argc, argv, "remove_plane");
   ros::NodeHandle nh;
 
   // Create a ROS subscriber for the input point cloud
   ros::Subscriber sub = nh.subscribe ("/cropbox/output", 1, cloud_cb);
-
   // Create a ROS publisher for the output point cloud
   pub = nh.advertise<sensor_msgs::PointCloud2> ("noplane", 1);
 
